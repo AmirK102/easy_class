@@ -1,0 +1,150 @@
+import 'package:animated_text_kit/animated_text_kit.dart';
+import 'package:easy_class/Screens/home_screen.dart';
+import 'package:easy_class/Screens/teacher_login_form.dart';
+import 'package:easy_class/functions/google_sign_in.dart';
+import 'package:easy_class/wigets/button.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
+import 'package:google_sign_in/google_sign_in.dart';
+
+class SplasScreen extends StatefulWidget {
+  const SplasScreen({Key? key}) : super(key: key);
+
+  @override
+  _SplasScreenState createState() => _SplasScreenState();
+}
+
+class _SplasScreenState extends State<SplasScreen> {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Theme.of(context).primaryColor,
+      body: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Container(
+            margin: EdgeInsets.symmetric(horizontal: 10, vertical: 20),
+            child: Image.asset("assets/easyclass.png"),
+          ),
+          Center(
+            child: SizedBox(
+              height: 200,
+              child: DefaultTextStyle(
+                style: const TextStyle(
+                  fontSize: 30.0,
+                  fontFamily: 'Agne',
+                ),
+                child: AnimatedTextKit(
+                  animatedTexts: [
+                    TypewriterAnimatedText(
+                      'easy class',
+                      speed: Duration(milliseconds: 100),
+                    ),
+                    TypewriterAnimatedText(
+                      'Mange Your Class Easily',
+                      speed: Duration(milliseconds: 100),
+                    ),
+                  ],
+                  repeatForever: false,
+                  totalRepeatCount: 1,
+                  onFinished: () {
+                    showDialog(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return CustomDialogBox();
+                      },
+                    );
+                  },
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class CustomDialogBox extends StatefulWidget {
+  @override
+  _CustomDialogBoxState createState() => _CustomDialogBoxState();
+}
+
+class _CustomDialogBoxState extends State<CustomDialogBox> {
+  @override
+  Widget build(BuildContext context) {
+    return Dialog(
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(23),
+      ),
+      elevation: 0,
+      backgroundColor: Colors.transparent,
+      child: contentBox(context),
+    );
+  }
+
+  contentBox(context) {
+    return Stack(
+      children: <Widget>[
+        Container(
+          height: 300,
+          padding: EdgeInsets.only(left: 20, top: 20, right: 20, bottom: 20),
+          margin: EdgeInsets.only(top: 45),
+          decoration: BoxDecoration(
+            shape: BoxShape.rectangle,
+            color: Colors.lightBlueAccent,
+            borderRadius: BorderRadius.circular(20),
+            boxShadow: [
+              BoxShadow(
+                  color: Colors.black, offset: Offset(0, 10), blurRadius: 10),
+            ],
+          ),
+        ),
+        Positioned.fill(
+          child: Align(
+            alignment: Alignment(0, -0.3),
+            child: Text(
+              "Do You Want To Log In As ",
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 22,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+        ),
+        Positioned.fill(
+          child: Align(
+            alignment: Alignment(0, 0.2),
+            child: Button(
+                buttonText: "Instructor",
+                onPressed: () async {
+                  try {
+                    await googleSignIN().then((value) {
+                      print(" Sign In complete");
+
+                      Navigator.of(context).pushAndRemoveUntil(
+                          MaterialPageRoute(builder: (context) {
+                        return TeacherLoginForm(
+                          userInfo: value!,
+                        );
+                      }), ModalRoute.withName('/'));
+                    });
+                  } catch (e) {
+                    print(e);
+                  }
+                }),
+          ),
+        ),
+        Positioned.fill(
+          child: Align(
+            alignment: Alignment(0, 0.8),
+            child: Button(buttonText: "Student", onPressed: () {}),
+          ),
+        ),
+      ],
+    );
+  }
+}
