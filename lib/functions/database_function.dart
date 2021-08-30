@@ -21,6 +21,20 @@ class Database {
     });
   }
 
+  void uploadStudentData(GoogleSignInAccount UserInfo, String? profilePicUrl,
+      String name, String phone, String department, String semister) async {
+    await _firestore.collection("user").doc(UserInfo.id).set({
+      'id': UserInfo.id,
+      'name': name,
+      'photo': profilePicUrl,
+      'email': UserInfo.email,
+      'phone': phone,
+      'department': department,
+      'user_type': 'Student',
+      'semister': semister
+    });
+  }
+
   updateProfilePicture(String? profilePicUrl) async {
     FirebaseStorage storage = FirebaseStorage.instance;
     var url;
@@ -42,7 +56,7 @@ class Database {
         .doc(uid)
         .get()
         .then((value) async => data = await value.data());
-    print(data);
+    //print(data);
     return data;
   }
 }

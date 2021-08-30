@@ -1,5 +1,5 @@
 import 'package:easy_class/Screens/splash_screen.dart';
-import 'package:easy_class/Screens/teacher_login_form.dart';
+import 'package:easy_class/Screens/sign_up_form.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 

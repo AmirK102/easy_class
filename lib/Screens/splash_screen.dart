@@ -1,6 +1,6 @@
 import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:easy_class/Screens/home_screen.dart';
-import 'package:easy_class/Screens/teacher_login_form.dart';
+import 'package:easy_class/Screens/sign_up_form.dart';
 import 'package:easy_class/functions/google_sign_in.dart';
 import 'package:easy_class/wigets/button.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -26,7 +26,11 @@ class _SplasScreenState extends State<SplasScreen> {
         children: [
           Container(
             margin: EdgeInsets.symmetric(horizontal: 10, vertical: 20),
-            child: Image.asset("assets/easyclass.png"),
+            child: Image.asset(
+              "assets/logo.png",
+              height: 100,
+              width: 100,
+            ),
           ),
           Center(
             child: SizedBox(
@@ -73,6 +77,8 @@ class CustomDialogBox extends StatefulWidget {
 }
 
 class _CustomDialogBoxState extends State<CustomDialogBox> {
+  bool loading = false;
+
   @override
   Widget build(BuildContext context) {
     return Dialog(
@@ -86,65 +92,111 @@ class _CustomDialogBoxState extends State<CustomDialogBox> {
   }
 
   contentBox(context) {
-    return Stack(
-      children: <Widget>[
-        Container(
-          height: 300,
-          padding: EdgeInsets.only(left: 20, top: 20, right: 20, bottom: 20),
-          margin: EdgeInsets.only(top: 45),
-          decoration: BoxDecoration(
-            shape: BoxShape.rectangle,
-            color: Colors.lightBlueAccent,
-            borderRadius: BorderRadius.circular(20),
-            boxShadow: [
-              BoxShadow(
-                  color: Colors.black, offset: Offset(0, 10), blurRadius: 10),
-            ],
-          ),
-        ),
-        Positioned.fill(
-          child: Align(
-            alignment: Alignment(0, -0.3),
-            child: Text(
-              "Do You Want To Log In As ",
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 22,
-                fontWeight: FontWeight.bold,
+    return loading
+        ? Center(
+            child: CircularProgressIndicator(),
+          )
+        : Stack(
+            children: <Widget>[
+              Container(
+                height: 300,
+                padding:
+                    EdgeInsets.only(left: 20, top: 20, right: 20, bottom: 20),
+                margin: EdgeInsets.only(top: 45),
+                decoration: BoxDecoration(
+                  shape: BoxShape.rectangle,
+                  color: Colors.lightBlueAccent,
+                  borderRadius: BorderRadius.circular(20),
+                  boxShadow: [
+                    BoxShadow(
+                        color: Colors.black,
+                        offset: Offset(0, 10),
+                        blurRadius: 10),
+                  ],
+                ),
               ),
-            ),
-          ),
-        ),
-        Positioned.fill(
-          child: Align(
-            alignment: Alignment(0, 0.2),
-            child: Button(
-                buttonText: "Instructor",
-                onPressed: () async {
-                  try {
-                    await googleSignIN().then((value) {
-                      print(" Sign In complete");
+              Positioned.fill(
+                child: Align(
+                  alignment: Alignment(0, -0.3),
+                  child: Text(
+                    "Do You Want To Log In As ",
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 22,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+              ),
+              Positioned.fill(
+                child: Align(
+                  alignment: Alignment(0, 0.2),
+                  child: Button(
+                      buttonText: "Instructor",
+                      onPressed: () async {
+                        setState(() {
+                          loading = true;
+                        });
+                        try {
+                          await googleSignIN().then((value) {
+                            print(value);
 
-                      Navigator.of(context).pushAndRemoveUntil(
-                          MaterialPageRoute(builder: (context) {
-                        return TeacherLoginForm(
-                          userInfo: value!,
-                        );
-                      }), ModalRoute.withName('/'));
-                    });
-                  } catch (e) {
-                    print(e);
-                  }
-                }),
-          ),
-        ),
-        Positioned.fill(
-          child: Align(
-            alignment: Alignment(0, 0.8),
-            child: Button(buttonText: "Student", onPressed: () {}),
-          ),
-        ),
-      ],
-    );
+                            if (value == null) {
+                              setState(() {
+                                loading = false;
+                              });
+                              print("faild");
+                              showDialog(
+                                  context: context,
+                                  builder: (context) => AlertDialog(
+                                        content: Text(
+                                            "Log In Failed! Please Try Again"),
+                                      ));
+                              return;
+                            }
+                            Navigator.of(context).pushAndRemoveUntil(
+                                MaterialPageRoute(builder: (context) {
+                              return SignUpForm(
+                                userInfo: value,
+                                isStudent: false,
+                              );
+                            }), ModalRoute.withName('/'));
+                          });
+                        } catch (e) {
+                          print(e);
+                          setState(() {
+                            loading = false;
+                          });
+                        }
+                      }),
+                ),
+              ),
+              Positioned.fill(
+                child: Align(
+                  alignment: Alignment(0, 0.8),
+                  child: Button(
+                      buttonText: "Student",
+                      onPressed: () async {
+                        setState(() {
+                          loading = true;
+                        });
+                        try {
+                          await googleSignIN().then((value) {
+                            Navigator.of(context).pushAndRemoveUntil(
+                                MaterialPageRoute(builder: (context) {
+                              return SignUpForm(
+                                userInfo: value!,
+                                isStudent: true,
+                              );
+                            }), ModalRoute.withName('/'));
+                          });
+                        } catch (e) {
+                          print(e);
+                        }
+                      }),
+                ),
+              ),
+            ],
+          );
   }
 }
