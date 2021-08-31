@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "21469773887",
+    "project_id": "easy-class-76b01",
+    "storage_bucket": "easy-class-76b01.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:21469773887:android:608916e94262c4b30ab88a",
+        "android_client_info": {
+          "package_name": "com.appanda.easy_class"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "21469773887-l7194gfhrkvfpkdjp8vaak7f86obb3pf.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.appanda.easy_class",
+            "certificate_hash": "3dc8978d5e1320fe753290a62d10230e64f52bba"
+          }
+        },
+        {
+          "client_id": "21469773887-auribe3i6blumcocvu0cmc9qke87hv03.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDrY9HYQD8vxkSM477H5nyzgGrpZqS3v30"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "21469773887-auribe3i6blumcocvu0cmc9qke87hv03.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
