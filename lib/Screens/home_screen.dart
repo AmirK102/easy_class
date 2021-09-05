@@ -5,6 +5,7 @@ import 'package:easy_class/Screens/sign_up_form.dart';
 import 'package:easy_class/Screens/splash_screen.dart';
 import 'package:easy_class/functions/database_function.dart';
 import 'package:easy_class/utilitis/const.dart';
+import 'package:easy_class/wigets/create_class.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -16,12 +17,14 @@ class HomeScreen extends StatefulWidget {
   const HomeScreen({
     required this.userInfo,
     required this.profileImage,
+    @required this.isStudent,
   });
 
   @override
   _HomeScreenState createState() => _HomeScreenState();
   final GoogleSignInAccount userInfo;
   final profileImage;
+  final isStudent;
 }
 
 class _HomeScreenState extends State<HomeScreen> {
@@ -61,6 +64,46 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+        floatingActionButton: !widget.isStudent
+            ? FloatingActionButton(
+                onPressed: () {
+                  Color randomColor = Const().listOfColor[
+                      Random().nextInt(Const().listOfColor.length)];
+                  showDialog(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return AlertDialog(
+                          shape: RoundedRectangleBorder(
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(20.0))),
+                          contentPadding: EdgeInsets.zero,
+                          content: Stack(
+                            overflow: Overflow.visible,
+                            children: <Widget>[
+                              CreateClass(
+                                  color: randomColor,
+                                  userInfo: widget.userInfo),
+                              Positioned(
+                                right: -20.0,
+                                top: -20.0,
+                                child: InkResponse(
+                                  onTap: () {
+                                    Navigator.of(context).pop();
+                                  },
+                                  child: CircleAvatar(
+                                    child: Icon(Icons.close),
+                                    backgroundColor: Colors.red,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        );
+                      });
+                },
+                child: Icon(Icons.add),
+              )
+            : Container(),
         appBar: AppBar(
           backgroundColor: Colors.lightBlue,
           title: Text("easy class"),
@@ -112,8 +155,6 @@ class _HomeScreenState extends State<HomeScreen> {
                   scrollDirection: Axis.vertical,
                   itemCount: 15,
                   itemBuilder: (context, index) {
-                    /*Color randomColor = Const().listOfColor[
-                        Random().nextInt(Const().listOfColor.length)];*/
                     if (i >= Const().listOfColor.length) {
                       i = 0;
                     }
@@ -215,5 +256,15 @@ class _HomeScreenState extends State<HomeScreen> {
             )
           ],
         ));
+  }
+
+  void addClass(BuildContext context, Color randomColor) {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+          builder: (_) => CreateClass(
+                color: randomColor,
+                userInfo: widget.userInfo,
+              )),
+    );
   }
 }

@@ -59,4 +59,16 @@ class Database {
     //print(data);
     return data;
   }
+
+  uploadClassData(className, classCode, instructorName, userInfo) async {
+    await _firestore
+        .collection("class")
+        .doc("${userInfo.id}-${DateTime.now().millisecondsSinceEpoch}")
+        .set({
+      'c_nale': className,
+      'c_code': classCode,
+      'instructor_name': instructorName,
+      'total_student': 0,
+    });
+  }
 }

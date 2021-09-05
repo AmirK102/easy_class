@@ -2,9 +2,12 @@ import 'package:flutter/material.dart';
 
 class CustomTextFields extends StatelessWidget {
   final String hintText;
+  final hintColor, textColor;
   CustomTextFields({
     required this.nameController,
     @required this.hintText = "",
+    this.hintColor,
+    this.textColor,
   });
 
   final TextEditingController nameController;
@@ -14,14 +17,16 @@ class CustomTextFields extends StatelessWidget {
     return TextField(
       autofocus: false,
       style: TextStyle(
-          color: Colors.lightBlue, fontWeight: FontWeight.bold, fontSize: 15),
+          color: textColor ?? Colors.lightBlue,
+          fontWeight: FontWeight.bold,
+          fontSize: 15),
       controller: nameController,
       onChanged: (value) {},
       decoration: InputDecoration(
         hintStyle: TextStyle(
           fontWeight: FontWeight.bold,
           fontSize: 15,
-          color: Colors.grey.withOpacity(0.7),
+          color: hintColor ?? Colors.grey.withOpacity(0.7),
         ),
         hintText: hintText,
         enabledBorder: UnderlineInputBorder(

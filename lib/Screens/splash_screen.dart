@@ -145,7 +145,6 @@ class _CustomDialogBoxState extends State<CustomDialogBox> {
                               setState(() {
                                 loading = false;
                               });
-                              print("faild");
                               showDialog(
                                   context: context,
                                   builder: (context) => AlertDialog(

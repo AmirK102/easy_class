@@ -386,6 +386,7 @@ class _SignUpFormState extends State<SignUpForm> {
                               Navigator.of(context).pushAndRemoveUntil(
                                   MaterialPageRoute(builder: (context) {
                                 return HomeScreen(
+                                  isStudent: widget.isStudent,
                                   profileImage: profilePicUrl,
                                   userInfo: widget.userInfo,
                                 );
