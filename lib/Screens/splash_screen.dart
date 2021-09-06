@@ -1,4 +1,5 @@
 import 'package:animated_text_kit/animated_text_kit.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:easy_class/Screens/home_screen.dart';
 import 'package:easy_class/Screens/sign_up_form.dart';
 import 'package:easy_class/functions/google_sign_in.dart';
@@ -77,7 +78,28 @@ class CustomDialogBox extends StatefulWidget {
 }
 
 class _CustomDialogBoxState extends State<CustomDialogBox> {
+  FirebaseFirestore _firestore = FirebaseFirestore.instance;
   bool loading = false;
+
+  Future<bool?> isIdExistsInInstructor(id) async {
+    bool isExist = true;
+    await _firestore.collection("instructor").doc(id).get().then((value) {
+      if (!value.exists) {
+        isExist = false;
+      }
+    });
+    return isExist;
+  }
+
+  Future<bool?> isIdExistsInStudent(id) async {
+    bool isExist = true;
+    await _firestore.collection("student").doc(id).get().then((value) {
+      if (!value.exists) {
+        isExist = false;
+      }
+    });
+    return isExist;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -138,9 +160,7 @@ class _CustomDialogBoxState extends State<CustomDialogBox> {
                           loading = true;
                         });
                         try {
-                          await googleSignIN().then((value) {
-                            print(value);
-
+                          await googleSignIN().then((value) async {
                             if (value == null) {
                               setState(() {
                                 loading = false;
@@ -153,13 +173,26 @@ class _CustomDialogBoxState extends State<CustomDialogBox> {
                                       ));
                               return;
                             }
-                            Navigator.of(context).pushAndRemoveUntil(
-                                MaterialPageRoute(builder: (context) {
-                              return SignUpForm(
-                                userInfo: value,
-                                isStudent: false,
-                              );
-                            }), ModalRoute.withName('/'));
+
+                            if (await isIdExistsInStudent(value.id) == false) {
+                              Navigator.of(context).pushAndRemoveUntil(
+                                  MaterialPageRoute(builder: (context) {
+                                return SignUpForm(
+                                  userInfo: value,
+                                  isStudent: false,
+                                );
+                              }), ModalRoute.withName('/'));
+                            } else {
+                              showDialog(
+                                  context: context,
+                                  builder: (context) => AlertDialog(
+                                        content: Text(
+                                            "You Have Already LoggedIn As A Student"),
+                                      ));
+                              setState(() {
+                                loading = false;
+                              });
+                            }
                           });
                         } catch (e) {
                           print(e);
@@ -180,14 +213,26 @@ class _CustomDialogBoxState extends State<CustomDialogBox> {
                           loading = true;
                         });
                         try {
-                          await googleSignIN().then((value) {
-                            Navigator.of(context).pushAndRemoveUntil(
-                                MaterialPageRoute(builder: (context) {
-                              return SignUpForm(
-                                userInfo: value!,
-                                isStudent: true,
-                              );
-                            }), ModalRoute.withName('/'));
+                          await googleSignIN().then((value) async {
+                            if (await isIdExistsInInstructor(value!.id) ==
+                                false) {
+                              Navigator.of(context).pushAndRemoveUntil(
+                                  MaterialPageRoute(builder: (context) {
+                                return SignUpForm(
+                                  userInfo: value,
+                                  isStudent: true,
+                                );
+                              }), ModalRoute.withName('/'));
+                            } else {
+                              showDialog(
+                                  context: context,
+                                  builder: (context) => AlertDialog(
+                                        content: Text(
+                                            "You have already logged in as a Instructor"),
+                                      ));
+                              loading = false;
+                              setState(() {});
+                            }
                           });
                         } catch (e) {
                           print(e);

@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
 class Database {
@@ -10,7 +11,7 @@ class Database {
 
   void uploadInstructorData(GoogleSignInAccount UserInfo, String? profilePicUrl,
       String name, String phone, String department) async {
-    await _firestore.collection("user").doc(UserInfo.id).set({
+    await _firestore.collection("instructor").doc(UserInfo.id).set({
       'id': UserInfo.id,
       'name': name,
       'photo': profilePicUrl,
@@ -23,7 +24,7 @@ class Database {
 
   void uploadStudentData(GoogleSignInAccount UserInfo, String? profilePicUrl,
       String name, String phone, String department, String semister) async {
-    await _firestore.collection("user").doc(UserInfo.id).set({
+    await _firestore.collection("student").doc(UserInfo.id).set({
       'id': UserInfo.id,
       'name': name,
       'photo': profilePicUrl,
@@ -49,10 +50,10 @@ class Database {
     return url;
   }
 
-  getUserData(uid) async {
+  getInstructorData(uid) async {
     var data;
     await _firestore
-        .collection("user")
+        .collection("instructor")
         .doc(uid)
         .get()
         .then((value) async => data = await value.data());
@@ -60,15 +61,63 @@ class Database {
     return data;
   }
 
-  uploadClassData(className, classCode, instructorName, userInfo) async {
+  getStudentData(uid) async {
+    var data;
     await _firestore
-        .collection("class")
-        .doc("${userInfo.id}-${DateTime.now().millisecondsSinceEpoch}")
-        .set({
+        .collection("student")
+        .doc(uid)
+        .get()
+        .then((value) async => data = await value.data());
+    //print(data);
+    return data;
+  }
+
+  uploadClassData(
+      className, classCode, instructorName, userInfo, crId, Color color) async {
+    String classID = "${userInfo.id}-${DateTime.now().millisecondsSinceEpoch}";
+
+    await _firestore.collection("class").doc(classID).set({
       'c_nale': className,
       'c_code': classCode,
       'instructor_name': instructorName,
-      'total_student': 0,
+      "cr_id": crId.id,
+      "cr_name": crId.name,
+      'class_id': classID,
+      "color": color.value,
+    });
+    return classID;
+  }
+
+  uploadStudentInAClass(String classID, userId) async {
+    await _firestore
+        .collection("class")
+        .doc(classID)
+        .collection("students")
+        .doc(userId)
+        .set({
+      "id": userId,
+    });
+  }
+
+  uploadClassIdToInstractor(String classID, userId) async {
+    await _firestore
+        .collection('instructor')
+        .doc(userId)
+        .collection('classes')
+        .doc(classID)
+        .set({
+      "class_id": classID,
+    });
+  }
+
+  uploadClassIdToStudents(String classID, userId) async {
+    await _firestore
+        .collection('student')
+        .doc(userId)
+        .collection('classes')
+        .doc(classID)
+        .set({
+      "class_id": classID,
     });
   }
 }

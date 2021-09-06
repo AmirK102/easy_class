@@ -52,7 +52,12 @@ class _SignUpFormState extends State<SignUpForm> {
   //functions
 
   setValues(id) async {
-    userData = await Database().getUserData(id);
+    if (widget.isStudent) {
+      userData = await Database().getStudentData(id);
+    } else {
+      userData = await Database().getInstructorData(id);
+    }
+
     print(",,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,");
     print(userData);
     if (userData != null) {
@@ -61,24 +66,14 @@ class _SignUpFormState extends State<SignUpForm> {
       _departmentTextController.text = userData["department"];
 
       _nameTextController.text = userData["name"];
-      //  _SemesterTextController.text = userData["semister"];
-
-      print("________________________________________________");
-      print(userData["photo"]);
-
-      print(userData["name"]);
+      _SemesterTextController.text = userData["semister"];
     } else {
       profilePicUrl = widget.userInfo.photoUrl!;
       _phoneNumberTextController.text = "";
       _departmentTextController.text = "";
       _nameTextController.text = widget.userInfo.displayName!;
 
-      // _SemesterTextController.text = userData["semister"] = "";
-
-      print("________________________________________________");
-      print(profilePicUrl);
-      print("+++++++++++++++++++++++++++++++++++++");
-      print(_nameTextController.text);
+      _SemesterTextController.text = userData["semister"] = "";
     }
   }
 
