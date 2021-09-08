@@ -196,8 +196,12 @@ class _HomeScreenState extends State<HomeScreen> {
         body: Column(
           children: [
             StreamBuilder<QuerySnapshot>(
-                stream: _firestore
+                stream: !widget.isStudent? _firestore
                     .collection('instructor')
+                    .doc(widget.userInfo.id)
+                    .collection("classes")
+                    .snapshots(): _firestore
+                    .collection('student')
                     .doc(widget.userInfo.id)
                     .collection("classes")
                     .snapshots(),
