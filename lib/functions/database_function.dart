@@ -9,6 +9,37 @@ import 'package:google_sign_in/google_sign_in.dart';
 class Database {
   FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
+  getClassSchedules(classId){
+    return  _firestore.collection("class").doc(classId).collection("schedules").orderBy('time', descending: true).snapshots();
+  }
+
+  addClassSchedules(topic, added_by, last_date, classId) async {
+    await _firestore.collection("class").doc(classId).collection("schedules").doc().set(
+        {
+          "topic": topic,
+          "added_by": added_by,
+          "last_date": last_date,
+          "time": Timestamp.now()
+        }
+    );
+  }
+
+  getMessageStrem(classId){
+    return  _firestore.collection("class").doc(classId).collection("messages").orderBy('time', descending: true).snapshots();
+  }
+
+
+  sendMessage(text, name, type, classId) async {
+    await _firestore.collection("class").doc(classId).collection("messages").doc().set(
+      {
+        "name": name,
+        "text": text,
+        "type": type,
+        "time": Timestamp.now()
+      }
+    );
+  }
+
   void uploadInstructorData(GoogleSignInAccount UserInfo, String? profilePicUrl,
       String name, String phone, String department) async {
     await _firestore.collection("instructor").doc(UserInfo.id).set({
