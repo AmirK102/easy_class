@@ -7,7 +7,9 @@ import '../functions/database_function.dart';
 
 class MessagesPage extends StatefulWidget {
   final classId;
-  final GoogleSignInAccount? userInfo;
+
+
+
 
   const MessagesPage({Key? key, this.classId, this.userInfo}) : super(key: key);
 
